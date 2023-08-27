@@ -1,4 +1,3 @@
-
 class NumericalSolver:
     def __init__(self, equation, initial_condition, time_step, num_steps):
         self.equation = equation

@@ -1,6 +1,6 @@
 import numpy as np
-import time_dependent_pdf as tdp
-import stoch_process as sp
+import TemporalDependencyFunctions.time_dependent_pdf as tdp
+import TemporalDependencyFunctions.stoch_process as sp
 
 def calculate_total_variation(dens1, dens2):
     return np.su
