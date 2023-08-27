@@ -1,4 +1,3 @@
-
 import numpy as np
 from FokkerPlanckModels.numerical_solver import NumericalSolver
 from FokkerPlanckModels.forward_fokker_planck import ForwardFokkerPlanck, BackwardFokkerPlanck
