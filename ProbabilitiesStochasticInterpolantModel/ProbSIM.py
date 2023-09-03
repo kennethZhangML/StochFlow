@@ -2,6 +2,8 @@ import numpy as np
 from scipy.integrate import solve_ivp 
 from scipy.integrate import quad 
 
+import matplotlib.pyplot as plt 
+
 class StochasticInterpolantModel:
     def __init__(self, initial_density, final_density, interpolant_func, diffusivity_func, time_interval, time_step):
         self.initial_density = initial_density
@@ -79,3 +81,12 @@ if __name__ == "__main__":
 
     print("Likelihood given samples: ", likelihood)
     print("Samples: ", samples)
+
+    fig = plt.figure()
+
+    plt.hist(samples, bins = 30, density = True, alpha = 0.7, color = 'blue', label = 'Generated Samples')
+    plt.xlabel('Value')
+    plt.ylabel('Density')
+    plt.title('Generated Samples')
+    plt.legend()
+    plt.show()
