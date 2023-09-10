@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 from scipy.integrate import solve_ivp
 from scipy.integrate import quad
+import matplotlib.pyplot as plt
+
 from sentence_transformers import SentenceTransformer
 from sentence_transformers import util 
 
@@ -45,6 +47,31 @@ class TextStochasticInterpolantModel:
 
         integral_result, _ = quad(integrand, -np.inf, np.inf)
         return integral_result
+
+    def visualize_sample_evolution(self, num_samples):
+        initial_samples = self.initial_model.encode(["initial sentence"] * num_samples)
+        time_points = np.arange(0, self.time_interval + self.time_step, self.time_step)
+
+        sample_trajectories = []
+
+        for sample in initial_samples:
+            sol = solve_ivp(
+                self._time_derivative,
+                [0, self.time_interval],
+                sample,
+                t_eval = time_points,
+                method = 'RK45'
+            )
+            sample_trajectories.append(sol.y)
+
+        for i, trajectory in enumerate(sample_trajectories):
+            plt.plot(time_points, trajectory.T, label = f'Sample {i + 1}')
+
+        plt.xlabel('Time')
+        plt.ylabel('Sample Value')
+        plt.title('Sample Evolution Over Time')
+        plt.legend()
+        plt.show()
 
 class SentenceEmbeddingDensity:
     def __init__(self, sentence_encoder, mean_embedding):
@@ -90,6 +117,8 @@ if __name__ == "__main__":
     model = TextStochasticInterpolantModel(initial_model, final_model, time_interval, time_step)
     samples = model.generate_samples(num_samples = 1000)
     likelihood = model.likelihood(samples)
+
+    # model.visualize_sample_evolution(num_samples = 5) 
 
     print("Likelihood given samples: ", likelihood)
     print("Samples: ", samples)
