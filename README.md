@@ -3,7 +3,7 @@
 StochFlow is a Python library that implements the stochastic interpolant models and algorithms described in the paper "Stochastic Interpolants via Diffusive and Flow-based Processes" by Chen et al. The library provides a set of tools for designing generative models using stochastic processes associated with time-evolving probability density functions, forward Fokker-Planck equations, and backward Fokker-Planck equations.
 
 <p align="center">
-  <img src="description_pic.png" />
+  <img src="Assets/description_pic.png" />
 </p>
 
 ## Features
