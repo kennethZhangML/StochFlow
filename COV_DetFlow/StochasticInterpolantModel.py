@@ -2,6 +2,7 @@ import numpy as np
 from scipy.stats import norm
 from sklearn.mixture import GaussianMixture
 
+
 class GaussianMixtureModel:
     def __init__(self, means, covariances, weights):
         self.means = means
@@ -12,8 +13,9 @@ class GaussianMixtureModel:
     def pdf(self, x):
         pdf_values = np.zeros(len(x))
         for i in range(self.num_components):
-            pdf_values += self.weights[i] * norm.pdf(x, loc = self.means[i], scale = np.sqrt(self.covariances[i]))
+            pdf_values += self.weights[i] * norm.pdf(x, loc=self.means[i], scale=np.sqrt(self.covariances[i]))
         return pdf_values
+
 
 class StochasticInterpolantModel:
     def __init__(self, rho_0, rho_1, params):
@@ -24,7 +26,8 @@ class StochasticInterpolantModel:
         self.interpolant_params = params.get('interpolant_params', {})
         self.diffusivity_params = params.get('diffusivity_params', {})
 
-    def generate_samples(self, num_samples):
+    @staticmethod
+    def generate_samples(num_samples):
         samples = np.random.randn(num_samples)
         return samples
 
@@ -33,4 +36,3 @@ class StochasticInterpolantModel:
 
     def cross_entropy(self, samples):
         return -np.mean(np.log(self.rho_1.pdf(samples)))
-

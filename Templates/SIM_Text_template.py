@@ -1,12 +1,11 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import torch.nn as nn
-from scipy.integrate import solve_ivp
 from scipy.integrate import quad
-import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
+from sentence_transformers import util, SentenceTransformer
+from Utils.util import interpolant_func, diffusivity_func
 
-from sentence_transformers import SentenceTransformer
-from sentence_transformers import util 
 
 class TextStochasticInterpolantModel:
     def __init__(self, initial_model, final_model, time_interval, time_step):
@@ -14,8 +13,7 @@ class TextStochasticInterpolantModel:
         self.final_model = final_model
         self.time_interval = time_interval
         self.time_step = time_step
-
-        self.interpolant_func = interpolant_func 
+        self.interpolant_func = interpolant_func
         self.diffusivity_func = diffusivity_func
 
     def generate_samples(self, num_samples):
@@ -31,9 +29,10 @@ class TextStochasticInterpolantModel:
 
         samples_integrated = []
         for sample in samples:
-            sol = solve_ivp(time_derivative, [0, self.time_interval], sample, t_eval = [self.time_interval], method = 'RK45')
+            sol = solve_ivp(time_derivative, [0, self.time_interval],
+                            sample, t_eval=[self.time_interval], method='RK45')
+            # Unresolved attribute reference 'y' for class
             samples_integrated.append(sol.y[:, -1])
-
         return torch.tensor(samples_integrated)
 
     def likelihood(self, samples):
@@ -44,7 +43,7 @@ class TextStochasticInterpolantModel:
             initial_density_value = self.initial_model.likelihood(x.reshape(-1, 1))
             final_density_value = self.final_model.likelihood(x.reshape(-1, 1))
             return initial_density_value * np.log(initial_density_value / final_density_value)
-
+        # numpy warning: Too many values to unpack
         integral_result, _ = quad(integrand, -np.inf, np.inf)
         return integral_result
 
@@ -53,19 +52,19 @@ class TextStochasticInterpolantModel:
         time_points = np.arange(0, self.time_interval + self.time_step, self.time_step)
 
         sample_trajectories = []
-
         for sample in initial_samples:
             sol = solve_ivp(
                 self._time_derivative,
                 [0, self.time_interval],
                 sample,
-                t_eval = time_points,
-                method = 'RK45'
+                t_eval=time_points,
+                method='RK45'
             )
+            # Unresolved attribute reference 'y' for class
             sample_trajectories.append(sol.y)
 
         for i, trajectory in enumerate(sample_trajectories):
-            plt.plot(time_points, trajectory.T, label = f'Sample {i + 1}')
+            plt.plot(time_points, trajectory.T, label=f'Sample {i + 1}')
 
         plt.xlabel('Time')
         plt.ylabel('Sample Value')
@@ -73,13 +72,14 @@ class TextStochasticInterpolantModel:
         plt.legend()
         plt.show()
 
+
 class SentenceEmbeddingDensity:
     def __init__(self, sentence_encoder, mean_embedding):
         self.sentence_encoder = sentence_encoder
-        self.mean_embedding = torch.tensor(mean_embedding, dtype = torch.double)  
+        self.mean_embedding = torch.tensor(mean_embedding, dtype=torch.double)
 
     def encode(self, sentences):
-        return self.sentence_encoder.encode(sentences, convert_to_tensor = True)
+        return self.sentence_encoder.encode(sentences, convert_to_tensor=True)
 
     def likelihood(self, samples):
         mean_embedding_expanded = self.mean_embedding.expand(samples.size(0), -1)
@@ -89,36 +89,28 @@ class SentenceEmbeddingDensity:
         cosine_sims = util.pytorch_cos_sim(samples_double, mean_embedding_expanded)
         prob_values = torch.nn.functional.softmax(cosine_sims, dim=0)
         likelihood_values = prob_values[:, 0].detach().numpy()
-
         return likelihood_values
 
-
-def interpolant_func(t):
-    return lambda x: x * (1 - t) + t * np.sin(x)
-
-def diffusivity_func(t):
-    return lambda x: 1.0 + t * np.cos(x)
 
 if __name__ == "__main__":
     sentence_encoder = SentenceTransformer("bert-base-nli-mean-tokens")
 
     initial_sentence = "initial sentence"
-    final_sentence = "final sentence"
-
     initial_mean_embedding = sentence_encoder.encode([initial_sentence])
-    final_mean_embedding = sentence_encoder.encode([final_sentence])
-
     initial_model = SentenceEmbeddingDensity(sentence_encoder, initial_mean_embedding)
+
+    final_sentence = "final sentence"
+    final_mean_embedding = sentence_encoder.encode([final_sentence])
     final_model = SentenceEmbeddingDensity(sentence_encoder, final_mean_embedding)
 
     time_interval = 1.0
     time_step = 0.01
 
     model = TextStochasticInterpolantModel(initial_model, final_model, time_interval, time_step)
-    samples = model.generate_samples(num_samples = 1000)
+    samples = model.generate_samples(num_samples=1000)
     likelihood = model.likelihood(samples)
 
     # model.visualize_sample_evolution(num_samples = 5) 
 
-    print("Likelihood given samples: ", likelihood)
-    print("Samples: ", samples)
+    print(f"Likelihood given samples: {likelihood}")
+    print(f"Samples: {samples}")

@@ -1,12 +1,7 @@
 import numpy as np
 import TemporalDependencyFunctions.time_dependent_pdf as tdp
 import TemporalDependencyFunctions.stoch_process as sp
-
-def calculate_total_variation(dens1, dens2):
-    return np.su
-
-def calculate_total_variation(density1, density2):
-    return np.sum(np.abs(density1 - density2))
+from Utils.util import calculate_total_variation
 
 initial_density = np.array([0.1, 0.2, 0.3, 0.2, 0.1])
 time_dependent_pdf = tdp.TimeDependentPDF(initial_density)
@@ -26,14 +21,13 @@ total_variation_sum = 0.0
 for _ in range(num_iterations):
     stochastic_process.evolve_density(time_dependent_pdf, time_step)
     current_density = time_dependent_pdf.get_density()
-    
+
     total_variation = calculate_total_variation(previous_density, current_density)
     total_variation_sum += total_variation
-    
+
     previous_density = current_density.copy()
-    
+
     print(f"Total Variation: {total_variation:.6f}")
 
 average_total_variation = total_variation_sum / num_iterations
 print(f"Average Total Variation: {average_total_variation:.6f}")
-
