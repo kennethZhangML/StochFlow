@@ -11,7 +11,7 @@ class NumericalSolver:
             self.solution.append(new_solution)
     
     def step(self):
-        current_soln = self.soln[-1]
+        current_soln = self.solution[-1]
         new_soln = current_soln + self.time_step * self.equation(current_soln)
         return new_soln
 
