@@ -1,6 +1,8 @@
-# StochFlow: A Python Library for Stochastic Interpolant Models (STILL WORK IN PROGRESS) 
+# StochFlow: A Python Library for Stochastic Interpolant Models
 
-StochFlow is a Python library that implements the stochastic interpolant models and algorithms described in the paper "Stochastic Interpolants via Diffusive and Flow-based Processes" by Chen et al. The library provides a set of tools for designing generative models using stochastic processes associated with time-evolving probability density functions, forward Fokker-Planck equations, and backward Fokker-Planck equations.
+> DISCLAIMER: Package is in continued development.
+
+StochFlow is a Python library that implements the stochastic interpolant models and algorithms described in the paper *Stochastic Interpolants via Diffusive and Flow-based Processes* by Chen et al **[preprint]**. The library provides a set of tools for designing generative models using stochastic processes associated with time-evolving probability density functions as well as the forward and backward Fokker-Planck equations.
 
 <p align="center">
   <img src="Assets/description_pic.png" />
@@ -18,9 +20,15 @@ StochFlow is a Python library that implements the stochastic interpolant models 
 
 To install StochFlow, simply run the following command:
 
+```bash
+pip3 install stochflow
+pip3 install $(grep -ivE "torch|torchvision|scikit-learn" requirements.txt)
 ```
-pip install stochflow
-```
+It may be necessary to manually install PyTorch and scikit-learn.
+
+**[PyTorch](https://pytorch.org/get-started/locally)** ➞ Select the stable build for your operating system, your preferred package manager, and compute platform depending on your GPU capabilities. Then, run the recommended commands to install PyTorch locally.
+
+**[scikit-learn](https://scikit-learn.org/stable/install)** ➞ Select your operating system/packager, and run the provided command to install the latest official release.
 
 ## Usage
 
